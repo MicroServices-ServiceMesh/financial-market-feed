@@ -49,7 +49,7 @@ For help, see: https://nodejs.org/en/docs/inspector
 [Nest] 23089   - 05/08/2021, 12:59:13 PM   [NestApplication] Nest application successfully started +3ms
 ```
 
-Open up the browser to http://127.0.0.1:3000/ to invoke the service. 
+Open up the browser to http://127.0.0.1:3000/hello to invoke the service. 
 
 ## Run the Application as a serverless lambda application
 
@@ -63,6 +63,6 @@ You can now browse to the above endpoints to invoke your functions. You do not n
 2021-05-08 12:51:49  * Running on http://127.0.0.1:3000/ (Press CTRL+C to quit)
 ```
 
-Open up the browser to http://127.0.0.1:3000/ to invoke the service. 
+Open up the browser to http://127.0.0.1:3000/hello to invoke the service. 
 
 
