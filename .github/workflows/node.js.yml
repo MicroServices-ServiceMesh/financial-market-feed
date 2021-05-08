@@ -6,8 +6,6 @@ name: Build
 on:
   push:
     branches: [ feature/**, review/** ]
-  pull_request:
-    branches: [ master ]
 
 jobs:
   build:
@@ -26,3 +24,19 @@ jobs:
     - run: cd api && npm install
     - run: cd api && npm run build-local --if-present
     - run: cd api && npm test
+    - run: run: echo '::set-output name=result::success'
+  
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+    if: ${{ github.event.check_run.output == 'success' }}
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: us-east-2
