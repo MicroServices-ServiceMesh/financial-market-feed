@@ -75,3 +75,4 @@ dist
 
 # FuseBox cache
 .fusebox/
+.vscode/settings.json
