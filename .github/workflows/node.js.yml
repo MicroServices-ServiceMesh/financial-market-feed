@@ -24,7 +24,6 @@ jobs:
     - run: cd api && npm install
     - run: cd api && npm run build-local --if-present
     - run: cd api && npm test
-    - run: run: echo '::set-output name=result::success'
   
   deploy:
     name: Deploy
