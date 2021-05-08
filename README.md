@@ -1,4 +1,4 @@
-# financial-market-feed
+# financial-market-feed [![Node.js CI](https://github.com/MicroServices-ServiceMesh/financial-market-feed/actions/workflows/node.js.yml/badge.svg)](https://github.com/MicroServices-ServiceMesh/financial-market-feed/actions/workflows/node.js.yml)
 
 This project contains source code and supporting files for a serverless application that you can deploy with the SAM CLI. It includes the following files and folders.
 
