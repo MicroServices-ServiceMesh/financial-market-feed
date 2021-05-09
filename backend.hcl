@@ -11,6 +11,6 @@
 #
 #    terraform init -backend-config=backend_s3.hcl
 #
-bucket="terraform-deployments"
+bucket="github-terraform-deployments"
 key="api-gateway/terraform.tfstate"
 region="us-east-2"
