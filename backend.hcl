@@ -13,4 +13,4 @@
 #
 bucket="terraform-deployments"
 key="api-gateway/terraform.tfstate"
-region="us-east-1"
+region="us-east-2"
