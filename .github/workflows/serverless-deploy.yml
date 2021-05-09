@@ -1,0 +1,17 @@
+name: Deploy
+
+on:
+  pull_request:
+    branches: [ master ]
+    types: [closed]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [12.x]
+        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
+
+    steps:
+    - uses: actions/checkout@v2

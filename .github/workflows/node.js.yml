@@ -1,31 +1,125 @@
-# This workflow will do a clean install of node dependencies, build the source code and run tests across different versions of node
-# For more information see: https://help.github.com/actions/language-and-framework-guides/using-nodejs-with-github-actions
-
-name: Node.js CI
+name: 'Build'
 
 on:
-  create:
   push:
     branches: [ feature/**, review/** ]
   pull_request:
-    branches: [ master ]
+    branches: [master]
 
 jobs:
-  build:
-
+  test:
     runs-on: ubuntu-latest
 
     strategy:
       matrix:
-        node-version: [10.x, 12.x, 14.x, 15.x]
-        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
+        node-version: [13.x]
 
     steps:
     - uses: actions/checkout@v2
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v2
+
+    - name: Cache Node modules
+      id: node-Cache
+      uses: actions/cache@v2
       with:
-        node-version: ${{ matrix.node-version }}
-    - run: cd api && npm install
-    - run: cd api && npm run build-local --if-present
-    - run: cd api && npm test
+        path: |
+          **/node_modules
+        key: node-modules-${{ hashFiles('hello-world/package-lock.json') }}
+
+
+    - name: Use Node.js ${{matrix.node-version}}
+      uses: actions/setup-node@v1
+      with:
+       node-version: ${{matrix.node-version}}
+    - run: |
+        cd api
+        # uncomment npm install if running locally using nektos/act
+        npm install
+        npm run test
+
+  build:
+    needs: test
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [13.x]
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Cache Node modules
+      id: node-Cache
+      uses: actions/cache@v2
+      with:
+        path: |
+          **/node_modules
+        key: node-modules-${{ hashFiles('hello-world/package-lock.json') }}
+
+    - name: Install Dependencies
+      if: steps.node-cache.outputs.cache-hit != 'true'
+      run: |
+        cd api
+        npm install
+        
+    - name: Use Node.js ${{matrix.node-version}}
+      uses: actions/setup-node@v1
+      with:
+       node-version: ${{matrix.node-version}}
+    - run: |
+        cd api
+        npm run build-local
+    
+    - name: Configure AWS credentials from Test account
+      uses:  aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: us-east-1 
+    - run: |
+        aws s3 cp api/dist/app.zip s3://notes-app-uploads-cloudxpert
+        aws s3 ls notes-app-uploads-cloudxpert
+
+  deploy:
+    name: 'Deploy'
+    needs: build
+    runs-on: ubuntu-latest
+
+    # Use the Bash shell regardless whether the GitHub Actions runner is ubuntu-latest, macos-latest, or windows-latest
+    defaults:
+      run:
+        shell: bash
+
+    steps:
+    # Checkout the repository to the GitHub Actions runner
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    # Configure AWS CLI
+    - name: Configure AWS credentials
+      uses:  aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: us-east-2
+
+    # Install the latest version of Terraform CLI and configure the Terraform CLI configuration file with a Terraform Cloud user API token
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v1
+
+    # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
+    - name: Terraform Init
+      run: terraform init -backend-config=backend.hcl
+
+    # Checks that all Terraform configuration files adhere to a canonical format
+    - name: Terraform Format
+      run: terraform fmt -check
+
+    # Generates an execution plan for Terraform
+    - name: Terraform Plan
+      run: terraform plan
+
+      # On push to master, build or change infrastructure according to Terraform configuration files
+      # Note: It is recommended to set up a required "strict" status check in your repository for "Terraform Cloud". See the documentation on "strict" required status checks for more information: https://help.github.com/en/github/administering-a-repository/types-of-required-status-checks
+    - name: Terraform Apply
+      if: github.ref == 'refs/heads/master'
+      run: terraform apply -auto-approve
