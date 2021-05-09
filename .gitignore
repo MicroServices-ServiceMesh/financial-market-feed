@@ -76,3 +76,4 @@ dist
 # FuseBox cache
 .fusebox/
 .vscode/settings.json
+.terraform.lock.hcl
