@@ -3,9 +3,6 @@ name: 'Build'
 on:
   push:
     branches: [ feature/**, review/** ]
-  pull_request:
-    types: [ closed ]
-    branches: [ master]
 
 jobs:
   test:
@@ -69,18 +66,8 @@ jobs:
     - run: |
         cd api
         npm run build-local
-    
-    - name: Configure AWS credentials from Test account
-      uses:  aws-actions/configure-aws-credentials@v1
-      with:
-        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region: us-east-1 
-    - run: |
-        aws s3 cp api/dist/app.zip s3://notes-app-uploads-cloudxpert
-        aws s3 ls notes-app-uploads-cloudxpert
 
-  deploy:
+  pre-deploy-check:
     name: 'Deploy'
     needs: build
     runs-on: ubuntu-latest
@@ -118,9 +105,3 @@ jobs:
     # Generates an execution plan for Terraform
     - name: Terraform Plan
       run: terraform plan
-
-      # On push to master, build or change infrastructure according to Terraform configuration files
-      # Note: It is recommended to set up a required "strict" status check in your repository for "Terraform Cloud". See the documentation on "strict" required status checks for more information: https://help.github.com/en/github/administering-a-repository/types-of-required-status-checks
-    - name: Terraform Apply
-      if: github.event.pull_request.merged == true
-      run: terraform apply -auto-approve
