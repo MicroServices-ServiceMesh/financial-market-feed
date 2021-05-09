@@ -18,8 +18,9 @@ This project is a hobby project and not meant to be used for business purposes. 
 To build and run this project, you'll need the following tools.
 
 * SAM CLI - [Install the SAM CLI](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-sam-cli-install.html)
-* Node.js - [Install Node.js 10](https://nodejs.org/en/), including the NPM package management tool.
+* Node.js - [Install Node.js 12x+](https://nodejs.org/en/), including the NPM package management tool.
 * Docker - [Install Docker community edition](https://hub.docker.com/search/?type=edition&offering=community)
+* Terraform  - [Install Terraform](https://learn.hashicorp.com/tutorials/terraform/install-cli)
 
 ## Build the Application
 To build your application for the first time, run the following in your shell:
