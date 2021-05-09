@@ -74,7 +74,7 @@ jobs:
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: us-east-1 
     - run: |
-        aws s3 cp api/dist/app.js.zip s3://notes-app-uploads-cloudxpert
+        aws s3 cp api/dist/app.zip s3://notes-app-uploads-cloudxpert
         aws s3 ls notes-app-uploads-cloudxpert
 
   deploy:

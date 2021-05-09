@@ -17,7 +17,7 @@ provider "aws" {
 
 data "aws_s3_bucket_object" "lambda" {
   bucket = "notes-app-uploads-cloudxpert"
-  key    = "app.js.zip"
+  key    = "api/dist/app.zip"
 }
 
 resource "aws_lambda_function" "example" {
