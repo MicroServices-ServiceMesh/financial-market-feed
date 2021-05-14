@@ -10,4 +10,10 @@
   "include": [
     "**/*.ts"
   ],
+  "exclude": [
+    "node_modules",
+    "test",
+    "dist",
+    "build"
+  ]
 }
